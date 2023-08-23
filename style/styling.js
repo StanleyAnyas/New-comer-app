@@ -46,8 +46,8 @@ export const styleForm = StyleSheet.create({
     },
     button: {
         backgroundColor: "#fff",
-        borderColor: "black",
-        borderWidth: 1,
+        // borderColor: "black",
+        // borderWidth: 1,
         padding: 10,
         borderRadius: 5,
         margin: 10,
@@ -65,5 +65,20 @@ export const styleForm = StyleSheet.create({
     },
     borderRed: {
         borderColor: "red",
+    },
+    header: {
+        fontSize: 30,
+        fontWeight: "bold",
+        marginBottom: 20,
+    },
+    fieldContainer: {
+        marginBottom: 15,
+        // flexDirection: "row",
+        // alignItems: "center",
+    },
+    fieldLabel: {
+        fontSize: 20,
+        marginRight: 5,
+        // fontWeight: "bold",
     },
 });

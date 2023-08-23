@@ -1,21 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { View, Text } from "react-native";
+import { View, Text, FlatList } from "react-native";
+import { getAllNewComers } from "../my-backend/database";
+// import axios from "axios";
 
 const GetNewComers = () => {
     const [newComers, setNewComers] = useState([]);
-
+    
     useEffect(() => {
-        fetch("http://localhost:3000/newComers")
-            .then((response) => response.json())
-            .then((json) => setNewComers(json))
-            .catch((err) => console.log(err));
+        const getNewComers = async () => {
+            try {
+                const newComer = await getAllNewComers();
+                setNewComers(newComer);
+            } catch (error) {
+                console.log(error);
+            }
+        };
+        getNewComers();
     }, []);
 
     return (
         <View>
-            {newComers.map((newComer) => (
-                <Text key={newComer.id}>{newComer.name}</Text>
-            ))}
+            <FlatList
+                data={newComers}
+                renderItem={({ item }) => (
+                    <View>
+                        <Text>{item.name}</Text>
+                        <Text>{item.lastName}</Text>
+                        <Text>{item.age}</Text>
+                        <Text>{item.email}</Text>
+                        <Text>{item.phone}</Text>
+                        <Text>{item.address}</Text>
+                    </View>
+                )}
+                keyExtractor={(item) => item._id}
+            />
         </View>
     );
 }
