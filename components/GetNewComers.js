@@ -1,17 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, SafeAreaView, ScrollView, RefreshControl, VirtualizedList, TouchableOpacity } from "react-native";
+import { View, Text, SafeAreaView, RefreshControl, VirtualizedList, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { listItems } from "../style/styling";
-import { Feather, Ionicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const GetNewComers = ({ navigation }) => {
+const GetNewComers = () => {
     const [newComerss, setNewComers] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-
     const { listItem, listItemText, editIcon } = listItems;
 
-    // const navigation = useNavigation();
+    const navigation = useNavigation();
     
     useEffect(() => {
         const getNewComers = async () => {
@@ -65,7 +64,7 @@ const GetNewComers = ({ navigation }) => {
                     keyExtractor={(item) => item._id}
                     getItemCount={(data) => data.length}
                     getItem={(data, index) => data[index]}
-                    // contentContainerStyle={{ flexGrow: 1 }}
+                    contentContainerStyle={{ flexGrow: 1 }}
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                 />
             </SafeAreaView>

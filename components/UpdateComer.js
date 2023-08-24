@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableWithoutFeedback, KeyboardAwareScrollView, TextInput, Button} from "react-native";
+import { View, Text, TouchableWithoutFeedback, TextInput, Button } from "react-native";
 import axios from "axios";
 import { styleForm } from "../style/styling";
+import { useRoute } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-const UpdateComer = (prop) => {
-    const { id } = prop;
-    const [userToUpdate, setUserToUpdate] = useState({});
+const UpdateComer = ({ navigation }) => {
+    const route = useRoute();
+    const { id } = route.params;
     const [name, setName] = useState("");
-    const [age, setAge] = useState("");
+    const [age, setAge] = useState(null);
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
@@ -22,7 +24,6 @@ const UpdateComer = (prop) => {
                 const response = await axios.get(`http://192.168.1.129:3001/newComers/${id}`);
                 if (response.status === 200) {
                     const user = response.data;
-                    setUserToUpdate(user);
                     setName(user.name);
                     setLastName(user.lastName);
                     setAge(user.age);
@@ -40,7 +41,7 @@ const UpdateComer = (prop) => {
     }, []);  
 
     const handleUpdateComer = async (name, lastName, age, email, phone, address) => {
-        if (name === "" || lastName === "" || age === "" || email === "" || phone === "" || address === "") {
+        if (name === "" || lastName === "" || !age  || email === "" || phone === "" || address === "") {
             setErrorMessage("Please fill in all fields");
             return;
         }
@@ -50,7 +51,7 @@ const UpdateComer = (prop) => {
             return;
         }
 
-        const updatedComer = {
+        const updatedComers = {
             name: name,
             lastName: lastName,
             age: age,
@@ -58,18 +59,18 @@ const UpdateComer = (prop) => {
             phone: phone,
             address: address,
         };
-        console.log(updatedComer);
+        // console.log(updatedComers);
         setName("");
         setLastName("");
         setAge("");
         setEmail("");
         setPhone("");
         setAddress("");
-        // Post new user
+
         try {
-            const response = await axios.put(`http://192.168.1.129:3001/newComers/${id}`, updatedComer);
+            const response = await axios.put(`http://192.168.1.129:3001/newComers/${id}`, updatedComers);
             if (response.status === 200 && response.status < 300) {
-                navigation.navigate("Successful");
+                navigation.navigate("Updated");
             } else {
                 setErrorMessage("Something went wrong, please try again");
             }
@@ -116,7 +117,7 @@ const UpdateComer = (prop) => {
                             placeholder="Age"
                             keyboardType="numeric"
                             onChangeText={(text) => setAge(text)}
-                            value={age}
+                            value={age !== null ? age.toString() : ""}
                         />
                     </View>
                     <View style={fieldContainer}>
@@ -164,4 +165,5 @@ const UpdateComer = (prop) => {
         </TouchableWithoutFeedback>
     );
 }
+
 export default UpdateComer;

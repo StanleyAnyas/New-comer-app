@@ -3,7 +3,7 @@ import { View, Text, Animated, TouchableOpacity, StyleSheet, SafeAreaView, Statu
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faCheck } from "@fortawesome/free-solid-svg-icons";
 
-const Successful = ({ navigation }) => {
+const SuccessfulUpdate = ({ navigation }) => {
   const opacityValue = useRef(new Animated.Value(0)).current;
   const scaleValue = useRef(new Animated.Value(0)).current;
 
@@ -22,17 +22,13 @@ const Successful = ({ navigation }) => {
     }).start();
   }, []);
 
-  const handleAddNewPress = () => {
-    navigation.navigate("Add new");
-  };
-
   const handleHomePress = () => {
     navigation.navigate("Home Screen");
   };
 
   const av = new Animated.Value(0);
   av.addListener(() => { return });
-
+  
   return (
     <SafeAreaView style={[styles.container, ]}>
       <StatusBar barStyle="dark-content" />
@@ -49,11 +45,6 @@ const Successful = ({ navigation }) => {
             <Text style={{ marginTop: 20, fontSize: 20 }}>Successful</Text>
           </View>
           <View style={styles.buttonsContainer}>
-            <View style={{ marginBottom: 10 }}>
-                <TouchableOpacity onPress={handleAddNewPress} style={[styles.button, { backgroundColor: "black", }]}>
-                    <Text style={[styles.text, {color: "white"}]}>Add new</Text>
-                </TouchableOpacity>
-            </View>
             <View>
                 <TouchableOpacity onPress={handleHomePress} style={[styles.button, { backgroundColor: "#ccc", color: "#000" }]}>
                     <Text style={styles.text}>Home</Text>
@@ -71,10 +62,6 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
   },
-  // centeredContent: {
-  //     alignItems: 'center',
-  //     marginTop: 100,
-  // },
   buttonsContainer: {
       flexDirection: 'column',
       justifyContent: 'space-around',
@@ -94,4 +81,4 @@ const styles = StyleSheet.create({
       fontSize: 20,
   },
 });
-export default Successful;
+export default SuccessfulUpdate;
