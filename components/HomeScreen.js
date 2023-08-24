@@ -12,8 +12,8 @@ const HomeScreen = ({ navigation }) => {
             <TouchableOpacity onPress={() => navigation.navigate('Add new')} style={style.button}>
                 <Text>Add new </Text>
             </TouchableOpacity>
-            <GetNewComers />
         </View>
+        <GetNewComers />
     </SafeAreaView>
   );
 };

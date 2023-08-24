@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './components/HomeScreen';
 import Successful from './components/Successful';
+import UpdateComer from './components/UpdateComer';
 
 const Stack = createStackNavigator();
 
@@ -18,13 +19,8 @@ export default function App() {
         <Stack.Screen name="Home Screen" component={HomeScreen}/>
         <Stack.Screen name="Add new" component={AddComer}/>
         <Stack.Screen name="Successful" component={Successful}/>
+        <Stack.Screen name="UpdateComer" component={UpdateComer} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

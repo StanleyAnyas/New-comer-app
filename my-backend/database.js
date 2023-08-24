@@ -1,14 +1,25 @@
+const corsOptions = {
+    origin: '*', // this work well to configure origin url in the server
+    methods: 'GET, POST, PUT, DELETE', // Allowed HTTP methods
+    allowedHeaders: 'Content-Type, Authorization', // Allowed headers
+};
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const port = 5000;
+app.use(cors(corsOptions));
+// app.UseCors((g)=>g.AllowAnyOrigin())
+const PORT = process.env.PORT || 3001;
 app.use(bodyParser.json());
-app.use(cors());
-import axios from 'axios';
-// const { MongoClient } = require('mongodb');
 
+app.use((_req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', '*');
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+    console.log("incoming request at " + new Date().toLocaleString());
+    next();
+  });
 
 const mongoURI = 'mongodb://127.0.0.1:27017/church';
 const mongooseOptions = {
@@ -23,8 +34,8 @@ mongoose.connect(mongoURI, mongooseOptions)
     }
     )
     .catch(err => console.log(err));
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+app.listen(PORT, () => {
+    console.log(`Server listening on port ${PORT}`);
 });
 
 const userSchema = new mongoose.Schema({
@@ -39,7 +50,8 @@ const userSchema = new mongoose.Schema({
 const newComers = mongoose.model('newComers', userSchema);
 
 app.get('/newComers', (req, res) => {
-    newComers.find({})
+    console.log("Recieved GET request")
+    newComers.find({}) // 'name lastName age email phone address
         .then((data) => {
             res.json(data);
         })
@@ -76,6 +88,15 @@ app.delete('/newComers/:id', (req, res) => {
         })
 });
 
+app.get('/newComers/:id', (req, res) => {
+    newComers.findById(req.params.id)
+        .then((data) => {
+            res.json(data);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+})
 app.put('/newComers/:id', (req, res) => {
     newComers.findByIdAndUpdate(req.params.id, {
         name: req.body.name,
@@ -93,80 +114,79 @@ app.put('/newComers/:id', (req, res) => {
         })
 })
 
-const postNewComer = async (newComer) => {
-    try {
-      const response = await fetch("http://localhost:5000/newComers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newComer),
-      });
-  
-      if (response.status === 200) {
-        return response.json();
-      } else {
-        throw new Error("Something went wrong");
-      }
-    } catch (error) {
-      throw error;
-    }
-  };
+// const postNewComer = async (newComer) => {
+//     try {
+//         const response = await axios.post("http://localhost:3001/newComers", newComer, {
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//         });
 
-const getAllNewComers = async () => {
-    try {
-        const response = await fetch("http://localhost:5000/newComers");
-        if (response.status === 200) {
-            return response.json();
-        } else {
-            throw new Error("Something went wrong");
-        }
-    } catch (error) {
-        throw error;
-    }
-};
+//         if (response.status === 200) {
+//             return response.data; // Use response.data instead of response.json()
+//         } else {
+//             throw new Error("Something went wrong");
+//         }
+//     } catch (error) {
+//         throw error;
+//     }
+// };
 
-const deleteNewComer = async (id) => {
-    try {
-        const response = await fetch(`http://localhost:5000/newComers/${id}`, {
-            method: "DELETE",
-        });
-        if (response.status === 200) {
-            return response.json();
-        } else {
-            throw new Error("Something went wrong");
-        }
-    } catch (error) {
-        throw error;
-    }
-};
 
-const updateNewComer = async (id, newComer) => {
-    try {
-        const response = await fetch(`http://localhost:5000/newComers/${id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(newComer),
-        });
-        if (response.status === 200) {
-            return response.json();
-        } else {
-            throw new Error("Something went wrong");
-        }
-    } catch (error) {
-        throw error;
-    }
-};
+// const getAllNewComers = async () => {
+//     try {
+//         const response = await fetch("http://localhost:5000/newComers");
+//         if (response.status === 200) {
+//             return response.json();
+//         } else {
+//             throw new Error("Something went wrong");
+//         }
+//     } catch (error) {
+//         throw error;
+//     }
+// };
 
-// Path: my-backend\components\AddNewComer.js
-module.exports = {
-    postNewComer,
-    getAllNewComers,
-    deleteNewComer,
-    updateNewComer
-}   
+// const deleteNewComer = async (id) => {
+//     try {
+//         const response = await fetch(`http://localhost:5000/newComers/${id}`, {
+//             method: "DELETE",
+//         });
+//         if (response.status === 200) {
+//             return response.json();
+//         } else {
+//             throw new Error("Something went wrong");
+//         }
+//     } catch (error) {
+//         throw error;
+//     }
+// };
+
+// const updateNewComer = async (id, newComer) => {
+//     try {
+//         const response = await fetch(`http://localhost:5000/newComers/${id}`, {
+//             method: "PUT",
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify(newComer),
+//         });
+//         if (response.status === 200) {
+//             return response.json();
+//         } else {
+//             throw new Error("Something went wrong");
+//         }
+//     } catch (error) {
+//         throw error;
+//     }
+// };
+
+// // Path: my-backend\components\AddNewComer.js
+// module.exports = {
+//     postNewComer,
+//     // getAllNewComers,
+//     // deleteNewComer,
+//     // updateNewComer
+// }   
 
 // postman test
 // GET

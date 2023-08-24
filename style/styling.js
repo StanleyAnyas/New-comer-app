@@ -25,6 +25,9 @@ export const style = StyleSheet.create({
     borderRed: {
         borderColor: "red",
     },
+    container: {
+        flex: 1,
+    },
 });
 
 export const styleForm = StyleSheet.create({
@@ -80,5 +83,22 @@ export const styleForm = StyleSheet.create({
         fontSize: 20,
         marginRight: 5,
         // fontWeight: "bold",
+    },
+});
+
+export const listItems = StyleSheet.create({
+    listItem: {
+        backgroundColor: "#f5f5f5",
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 5,
+    },
+    listItemText: {
+        fontSize: 20,
+    },
+    editIcon: {
+        position: "absolute",
+        right: 10,
+        top: 10,
     },
 });
