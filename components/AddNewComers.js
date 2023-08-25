@@ -1,14 +1,14 @@
-import React, { useState } from "react";
-import { TextInput, View, Button, Text, TouchableWithoutFeedback, useWindowDimensions } from "react-native";
+import React, { useState, useEffect } from "react";
+import { TextInput, View, Button, Text, TouchableWithoutFeedback, useWindowDimensions, TouchableOpacity } from "react-native";
 import { styleForm } from "../style/styling";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from "axios";
 import GetNewComers  from "./GetNewComers";
 
 const AddComer = ({ navigation }) => {
-    const windowWidth = useWindowDimensions().width;
-    const windowHeight = useWindowDimensions().height;
-    const { container, input, button, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel } = styleForm;
+    // const windowWidth = useWindowDimensions().width;
+    // const windowHeight = useWindowDimensions().height;
+    const { container, input, saveButton, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel, goBackBtn } = styleForm;
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
     const [email, setEmail] = useState("");
@@ -16,6 +16,7 @@ const AddComer = ({ navigation }) => {
     const [address, setAddress] = useState("");
     const [lastName, setLastName] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [fetchingError, setFetchingError] = useState(false);
 
     let errorTimeout;
     const addNewUser = async (name, lastName, age, email, phone, address) => {
@@ -65,23 +66,26 @@ const AddComer = ({ navigation }) => {
         try {
             const response = await axios.post("http://192.168.1.129:3001/newComers", newComer);
             if (response.status === 200 && response.status < 300) {
-                <GetNewComers />
                 navigation.navigate("Successful");
             } else {
-                setErrorMessage("Something went wrong, please try again");
+                setFetchingError(true);
                 errorTimeout = setTimeout(() => {
                     setErrorMessage("");
                 }, 3000);
             }
           } catch (error) {
-            console.log("Error:", error);
-            setErrorMessage("An error occurred, please try again");
+            setFetchingError(true);
             errorTimeout = setTimeout(() => {
               setErrorMessage("");
             }, 3000);
           }
         }
 
+        useEffect(() => {
+            if (fetchingError) {
+              navigation.navigate("Error");
+            }
+        }, [fetchingError]);
     return (
         <TouchableWithoutFeedback>
               <KeyboardAwareScrollView
@@ -93,6 +97,12 @@ const AddComer = ({ navigation }) => {
                 >
                 <View style={container}>
                     <Text style={header}>Add new comer</Text>
+                    <View style={goBackBtn}>
+                        <Button
+                            title="Go back"
+                            onPress={() => navigation.navigate("Home Screen")}
+                        />
+                    </View>
                     <View style={fieldContainer}>
                         <Text style={fieldLabel}>Name</Text>
                         <TextInput
@@ -157,11 +167,10 @@ const AddComer = ({ navigation }) => {
                         />
                     </View>
                     <Text style={errorMessageStyle}>{errorMessage}</Text>
-                    <View style={[button, buttonText]} >
-                        <Button
-                            title="Save"
-                            onPress={() => addNewUser(name, lastName, age, email, phone, address)}
-                        />
+                    <View style={saveButton} >
+                        <TouchableOpacity onPress={() => addNewUser(name, lastName, age, email, phone, address)}>
+                            <Text style={buttonText}>Save</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </KeyboardAwareScrollView>

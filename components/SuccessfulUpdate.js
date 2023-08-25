@@ -25,9 +25,6 @@ const SuccessfulUpdate = ({ navigation }) => {
   const handleHomePress = () => {
     navigation.navigate("Home Screen");
   };
-
-  const av = new Animated.Value(0);
-  av.addListener(() => { return });
   
   return (
     <SafeAreaView style={[styles.container, ]}>

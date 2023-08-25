@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableWithoutFeedback, TextInput, Button } from "react-native";
+import { View, Text, TouchableWithoutFeedback, TextInput, Button, TouchableOpacity, SafeAreaView, Alert} from "react-native";
 import axios from "axios";
 import { styleForm } from "../style/styling";
 import { useRoute } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const UpdateComer = ({ navigation }) => {
+    navigation.removeListener;
     const route = useRoute();
     const { id } = route.params;
     const [name, setName] = useState("");
@@ -15,8 +16,9 @@ const UpdateComer = ({ navigation }) => {
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
+    const [fetchingError, setFetchingError] = useState(false);
 
-    const { container, input, button, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel } = styleForm;
+    const { container, input, saveButton, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel, cancelButton, deleteButton, actions } = styleForm;
 
     useEffect(() => {
         const getNewComer = async () => {
@@ -31,10 +33,10 @@ const UpdateComer = ({ navigation }) => {
                     setPhone(user.phone);
                     setAddress(user.address);
                 } else {
-                    throw new Error("Something went wrong");
+                    setFetchingError(true);
                 }
             } catch (error) {
-                console.log("Error fetching user:", error);
+                setFetchingError(true);
             }
         };
         getNewComer();
@@ -72,13 +74,45 @@ const UpdateComer = ({ navigation }) => {
             if (response.status === 200 && response.status < 300) {
                 navigation.navigate("Updated");
             } else {
-                setErrorMessage("Something went wrong, please try again");
+                setFetchingError(true);
             }
         } catch (error) {
-            console.log("Error:", error);
+            setFetchingError(true);
         }
     };
 
+    const deleteComer = () => {
+        Alert.alert(
+            "Delete",
+            `Are you sure you want to delete ${name} ${lastName}?`,
+            [
+                {
+                    text: "Cancel",
+                    style: "cancel",
+                },
+                {
+                    text: "Delete",
+                    onPress: async () => {
+                        try {
+                            const response = await axios.delete(`http://192.168.1.129:3001/newComers/${id}`);
+                            if (response.status === 200 && response.status < 300) {
+                                navigation.navigate("Home Screen");
+                            }
+                        } catch (error) {
+                            setFetchingError(true);
+                        }
+                    },
+                },
+            ],
+            { cancelable: false }
+        );
+    };
+
+    useEffect(() => {
+        if (fetchingError) {
+          navigation.navigate("Error");
+        }
+      }, [fetchingError]);
     return (
         <TouchableWithoutFeedback>
             <KeyboardAwareScrollView
@@ -88,8 +122,17 @@ const UpdateComer = ({ navigation }) => {
                 scrollEnabled={true}
                 keyboardShouldPersistTaps="handled"
             >
+                <SafeAreaView style={{ flex: 1 }}>
                 <View style={container}>
-                    <Text style={header}>Add new comer</Text>
+                    <Text style={header}>Edit</Text>
+                    <View style={actions}>
+                        <View style={cancelButton}>
+                            <Button title="Cancel" onPress={() => navigation.navigate('Home Screen')} />
+                        </View>
+                        <View style={deleteButton}>  
+                            <Button title="Delete" onPress={deleteComer} />
+                        </View>
+                    </View>
                     <View style={fieldContainer}>
                         <Text style={fieldLabel}>Name</Text>
                         <TextInput
@@ -154,13 +197,13 @@ const UpdateComer = ({ navigation }) => {
                         />
                     </View>
                     <Text style={errorMessageStyle}>{errorMessage}</Text>
-                    <View style={[button, buttonText]} >
-                        <Button
-                            title="Save"
-                            onPress={() => handleUpdateComer(name, lastName, age, email, phone, address)}
-                        />
+                    <View style={saveButton} >
+                        <TouchableOpacity  onPress={() => handleUpdateComer(name, lastName, age, email, phone, address)}>
+                            <Text style={buttonText}>Save</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
+                </SafeAreaView>
             </KeyboardAwareScrollView>
         </TouchableWithoutFeedback>
     );
