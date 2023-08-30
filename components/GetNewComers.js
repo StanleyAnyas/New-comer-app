@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, SafeAreaView, RefreshControl, VirtualizedList, TouchableOpacity, ActivityIndicator } from "react-native";
+import { View, Text, SafeAreaView, RefreshControl, VirtualizedList, TouchableOpacity, ActivityIndicator, Linking } from "react-native";
 import axios from "axios";
 import { listItems } from "../style/styling";
 import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const GetNewComers = () => {
+const GetNewComers = ({ isFocused }) => {
+    const httpAddress = "172.20.10.3"
     const [newComerss, setNewComers] = useState([]);
     const [error, setError] = useState("");
     const [refreshing, setRefreshing] = useState(false);
@@ -17,7 +18,8 @@ const GetNewComers = () => {
         const getNewComers = async () => {
             setFetching(true);
             try {
-                const newComer = await axios.get("http://192.168.1.129:3001/newComers");
+                const newComer = await axios.get(`http://${httpAddress}:3001/newComers`);
+                // 172.20.10.2
                 setNewComers(newComer.data);
                 setFetching(false);
             } catch (error) {
@@ -32,7 +34,7 @@ const GetNewComers = () => {
         setFetching(true);
         const getNewComers = async () => {
             try {
-                const newComer = await axios.get("http://192.168.1.129:3001/newComers");
+                const newComer = await axios.get(`http://${httpAddress}:3001/newComers`);
                 setNewComers(newComer.data);
                 setFetching(false);
             } catch (error) {
@@ -43,6 +45,22 @@ const GetNewComers = () => {
         setRefreshing(false);
     }, []);
 
+    useEffect(() => {
+        if(isFocused) {
+            const getNewComers = async () => {
+                setFetching(true);
+                try {
+                    const newComer = await axios.get(`http://${httpAddress}:3001/newComers`);
+                    // 172.20.10.2
+                    setNewComers(newComer.data);
+                    setFetching(false);
+                } catch (error) {
+                    setError("Something went wrong, please try again");
+                }
+            };
+            getNewComers();
+        }
+    }, [isFocused]);
     const editPerson = (id) => {
         navigation.removeListener
         navigation.navigate("UpdateComer", { id: id });
@@ -59,9 +77,9 @@ const GetNewComers = () => {
                             <View style={listItemTextContainer}>
                                 <Text style={listItemText}>{item.name} {item.lastName}</Text>
                                 <Text style={listItemDetails}>Age: {item.age}</Text>
-                                <Text style={listItemDetails}>Email: {item.email}</Text>
-                                <Text style={listItemDetails}>Phone: {item.phone}</Text>
-                                <Text style={listItemDetails}>Address: {item.address}</Text>
+                                <Text style={listItemDetails} onPress={() => Linking.openURL(`mailto:${item.email}`)}>Email: {item.email}</Text>
+                                <Text style={listItemDetails} onPress={() => Linking.openURL(`tel:${item.phone}`)}>Phone: {item.phone}</Text>
+                                <Text style={listItemDetails} onPress={() => Linking.openURL(`http://maps.google.com/maps?q=${item.address}`)}>Address: {item.address}</Text>
                             </View>
                             <TouchableOpacity style={editIcon} onPress={() => editPerson(item._id)}>
                                 <Feather name="edit" size={24} color="black" />

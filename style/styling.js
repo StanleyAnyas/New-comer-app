@@ -2,13 +2,13 @@ import { StyleSheet } from "react-native";
 
 export const style = StyleSheet.create({
     button: {
-        backgroundColor: "#fff",
-        borderColor: "black",
-        borderWidth: 1,
-        padding: 10,
-        borderRadius: 5,
-        margin: 10,
-        width: 100,
+        // backgroundColor: "#fff",
+        // borderColor: "black",
+        // borderWidth: 1,
+        // padding: 10,
+        // borderRadius: 5,
+        // margin: 10,
+        // width: 100,
         alignItems: "center",
     },
     buttonText: {
@@ -157,3 +157,35 @@ export const listItems = StyleSheet.create({
         height: 80,
     },
 });
+
+export const searchComer = StyleSheet.create({
+    container: {
+        flex: 1,
+        marginTop: 20,
+        padding: 3,
+    },
+    activityIndicator: {
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 80,
+    },
+    listItemTextContainer: {
+        flex: 1,
+        marginRight: 10,
+    },
+    listItemContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#f5f5f5',
+        padding: 10,
+        marginVertical: 5,
+        borderRadius: 5,
+        marginHorizontal: 10,
+    },
+    listItemText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+});
+  

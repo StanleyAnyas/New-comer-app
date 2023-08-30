@@ -8,6 +8,7 @@ import Successful from './components/Successful';
 import UpdateComer from './components/UpdateComer';
 import SuccessfulUpdate from './components/SuccessfulUpdate';
 import ShowError from './components/ShowError';
+import Search from './components/Search';
 
 const Stack = createStackNavigator();
 Stack.Navigator.defaultProps = {
@@ -28,6 +29,7 @@ export default function App() {
         <Stack.Screen name="UpdateComer" component={UpdateComer} options={{headerShown: false}}/>
         <Stack.Screen name="Updated" component={SuccessfulUpdate} options={{headerShown: false}}/>
         <Stack.Screen name="Error" component={ShowError} options={{headerShown: false}}/>
+        <Stack.Screen name="Search" component={Search} options={{headerShown: false}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

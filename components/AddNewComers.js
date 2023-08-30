@@ -6,6 +6,7 @@ import axios from "axios";
 import GetNewComers  from "./GetNewComers";
 
 const AddComer = ({ navigation }) => {
+    const httpAddress = "172.20.10.3"
     // const windowWidth = useWindowDimensions().width;
     // const windowHeight = useWindowDimensions().height;
     const { container, input, saveButton, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel, goBackBtn } = styleForm;
@@ -64,7 +65,7 @@ const AddComer = ({ navigation }) => {
         setAddress("");
         // Post new user
         try {
-            const response = await axios.post("http://192.168.1.129:3001/newComers", newComer);
+            const response = await axios.post(`http://${httpAddress}:3001/newComers`, newComer);
             if (response.status === 200 && response.status < 300) {
                 navigation.navigate("Successful");
             } else {

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableWithoutFeedback, TextInput, Button, TouchableOpacity, SafeAreaView, Alert} from "react-native";
+import { View, Text, TouchableWithoutFeedback, TextInput, Button, TouchableOpacity, SafeAreaView, Alert, ActivityIndicator } from "react-native";
 import axios from "axios";
 import { styleForm } from "../style/styling";
 import { useRoute } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const UpdateComer = ({ navigation }) => {
+    const httpAddress = "172.20.10.3"
     navigation.removeListener;
     const route = useRoute();
     const { id } = route.params;
@@ -17,13 +18,14 @@ const UpdateComer = ({ navigation }) => {
     const [address, setAddress] = useState("");
     const [errorMessage, setErrorMessage] = useState("");
     const [fetchingError, setFetchingError] = useState(false);
+    const [isEmpty, setIsEmpty] = useState(false);
 
-    const { container, input, saveButton, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel, cancelButton, deleteButton, actions } = styleForm;
+    const { container, input, saveButton, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel, cancelButton, deleteButton, actions, activityIndicator } = styleForm;
 
     useEffect(() => {
         const getNewComer = async () => {
             try {
-                const response = await axios.get(`http://192.168.1.129:3001/newComers/${id}`);
+                const response = await axios.get(`http://${httpAddress}:3001/newComers/${id}`);
                 if (response.status === 200) {
                     const user = response.data;
                     setName(user.name);
@@ -41,6 +43,14 @@ const UpdateComer = ({ navigation }) => {
         };
         getNewComer();
     }, []);  
+
+    useEffect(() => {
+        if (name === "" || lastName === "" || !age  || email === "" || phone === "" || address === "") {
+            setIsEmpty(true);
+        } else {
+            setIsEmpty(false);
+        }
+    }, [name, lastName, age, email, phone, address]);
 
     const handleUpdateComer = async (name, lastName, age, email, phone, address) => {
         if (name === "" || lastName === "" || !age  || email === "" || phone === "" || address === "") {
@@ -70,7 +80,7 @@ const UpdateComer = ({ navigation }) => {
         setAddress("");
 
         try {
-            const response = await axios.put(`http://192.168.1.129:3001/newComers/${id}`, updatedComers);
+            const response = await axios.put(`http://${httpAddress}:3001/newComers/${id}`, updatedComers);
             if (response.status === 200 && response.status < 300) {
                 navigation.navigate("Updated");
             } else {
@@ -94,7 +104,7 @@ const UpdateComer = ({ navigation }) => {
                     text: "Delete",
                     onPress: async () => {
                         try {
-                            const response = await axios.delete(`http://192.168.1.129:3001/newComers/${id}`);
+                            const response = await axios.delete(`http://${httpAddress}:3001/newComers/${id}`);
                             if (response.status === 200 && response.status < 300) {
                                 navigation.navigate("Home Screen");
                             }
@@ -123,11 +133,13 @@ const UpdateComer = ({ navigation }) => {
                 keyboardShouldPersistTaps="handled"
             >
                 <SafeAreaView style={{ flex: 1 }}>
+                {isEmpty ? <ActivityIndicator size="large" style={activityIndicator} color="#0000ff" />
+                    :
                 <View style={container}>
                     <Text style={header}>Edit</Text>
                     <View style={actions}>
                         <View style={cancelButton}>
-                            <Button title="Cancel" onPress={() => navigation.navigate('Home Screen')} />
+                            <Button title="Cancel" onPress={() => navigation.goBack()} />
                         </View>
                         <View style={deleteButton}>  
                             <Button title="Delete" onPress={deleteComer} />
@@ -202,7 +214,7 @@ const UpdateComer = ({ navigation }) => {
                             <Text style={buttonText}>Save</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                </View>}
                 </SafeAreaView>
             </KeyboardAwareScrollView>
         </TouchableWithoutFeedback>
