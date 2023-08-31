@@ -108,6 +108,7 @@ export const styleForm = StyleSheet.create({
     },
     deleteButton: {
         borderRadius: 5,
+        marginRight: 10,
     },
     activityIndicator: {
         flex: 1,
@@ -116,7 +117,7 @@ export const styleForm = StyleSheet.create({
         height: 80,
     },
     goBackBtn: {
-        marginRight: '70%',
+        marginRight: '80%',
         marginBottom: 10,
     },
 });
@@ -156,6 +157,9 @@ export const listItems = StyleSheet.create({
         alignItems: 'center',
         height: 80,
     },
+    totalPerson: {
+        fontSize: 15,
+    },
 });
 
 export const searchComer = StyleSheet.create({
@@ -186,6 +190,19 @@ export const searchComer = StyleSheet.create({
     listItemText: {
         fontSize: 18,
         fontWeight: 'bold',
+    },
+    noFound: {
+        fontSize: 20,
+        textAlign: 'center',
+        marginTop: 20,
+    },
+    errorMessage: {
+        flex: 1,
+        marginTop: 20,
+        paddingTop: 20,
+        color: 'red',
+        fontSize: 18,
+        textAlign: 'center',
     },
 });
   

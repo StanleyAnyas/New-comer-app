@@ -1,23 +1,39 @@
 import React, { useEffect, useState } from 'react';
-import { View, Button, TouchableOpacity, Text, SafeAreaView, Image } from 'react-native';
+import { View, TouchableOpacity, SafeAreaView, Image, Text } from 'react-native';
 import { style } from '../style/styling';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import GetNewComers from './GetNewComers';
 import logo from '../image/watchman-logo.jpeg';
+import { useFocusEffect } from '@react-navigation/native';
+import { BackHandler } from 'react-native';
+import 'react-native-get-random-values';
+
+
 
 const HomeScreen = ({ navigation }) => {
+
+  useFocusEffect(
+    React.useCallback(() => {
+      const onBackPress = () => {
+        navigation.goBack(null);
+      };
+      BackHandler.addEventListener('hardwareBackPress', onBackPress);
+      return () =>
+        BackHandler.removeEventListener('hardwareBackPress', onBackPress);
+    }, []),
+  );
 
   const [isFocused, setIsFocused] = useState(false);
 
   useEffect(() => {
     navigation.addListener('focus', () => {
-      <GetNewComers />
+      setIsFocused(true);
     });
   }, []);
 
   useEffect(() => {
     const unsubcribe = navigation.addListener('focus', () => {
-      setIsFocused(true);
+      setIsFocused(false);
     });
 
     return unsubcribe;

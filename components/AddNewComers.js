@@ -3,12 +3,10 @@ import { TextInput, View, Button, Text, TouchableWithoutFeedback, useWindowDimen
 import { styleForm } from "../style/styling";
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import axios from "axios";
-import GetNewComers  from "./GetNewComers";
+import 'react-native-get-random-values';
 
 const AddComer = ({ navigation }) => {
     const httpAddress = "172.20.10.3"
-    // const windowWidth = useWindowDimensions().width;
-    // const windowHeight = useWindowDimensions().height;
     const { container, input, saveButton, buttonText, errorMessageStyle, header, fieldContainer, fieldLabel, goBackBtn } = styleForm;
     const [name, setName] = useState("");
     const [age, setAge] = useState("");
@@ -22,6 +20,7 @@ const AddComer = ({ navigation }) => {
     let errorTimeout;
     const addNewUser = async (name, lastName, age, email, phone, address) => {
         clearTimeout(errorTimeout);
+        setErrorMessage("");
 
         // Validation
         if (!name || !age || !email || !phone || !address || !lastName) {
@@ -48,6 +47,14 @@ const AddComer = ({ navigation }) => {
             return;
         }
 
+       
+        name = name.trim();
+        lastName = lastName.trim();
+        age = age.trim();
+        email = email.trim();
+        phone = phone.trim();
+        address = address.trim();
+
         const newComer = {
             name: name,
             lastName: lastName,
@@ -56,7 +63,6 @@ const AddComer = ({ navigation }) => {
             phone: phone,
             address: address,
         };
-        console.log(newComer);
         setName("");
         setLastName("");
         setAge("");
@@ -68,17 +74,30 @@ const AddComer = ({ navigation }) => {
             const response = await axios.post(`http://${httpAddress}:3001/newComers`, newComer);
             if (response.status === 200 && response.status < 300) {
                 navigation.navigate("Successful");
-            } else {
-                setFetchingError(true);
+            }else if (response.status === 409) {
+                setErrorMessage("Someone with the same details already exists.");
                 errorTimeout = setTimeout(() => {
                     setErrorMessage("");
                 }, 3000);
             }
           } catch (error) {
-            setFetchingError(true);
-            errorTimeout = setTimeout(() => {
-              setErrorMessage("");
-            }, 3000);
+            if (error.response.status === 409) {
+                setErrorMessage("Someone with the same details already exists.");
+                setName(name);
+                setLastName(lastName);  
+                setAge(age);
+                setEmail(email);
+                setPhone(phone);
+                setAddress(address);
+              errorTimeout = setTimeout(() => { 
+                setErrorMessage("");
+              }, 10000);
+            } else {
+                setFetchingError(true);
+                errorTimeout = setTimeout(() => {
+                setErrorMessage("");
+                }, 3000);
+            }
           }
         }
 
@@ -100,7 +119,7 @@ const AddComer = ({ navigation }) => {
                     <Text style={header}>Add new comer</Text>
                     <View style={goBackBtn}>
                         <Button
-                            title="Go back"
+                            title="Cancel"
                             onPress={() => navigation.navigate("Home Screen")}
                         />
                     </View>

@@ -60,23 +60,40 @@ app.get('/newComers', (req, res) => {
         })
 });
 
-app.post('/newComers', (req, res) => {
-    const person = new newComers({
-        name: req.body.name,
-        lastName: req.body.lastName,
-        age: req.body.age,
-        email: req.body.email,
-        phone: req.body.phone,
-        address: req.body.address
-    });
-    person.save()
-        .then((data) => {
-            res.json(data);
-        })
-        .catch((err) => {
-            console.log(err);
-        })
+app.post('/newComers', async (req, res) => {
+    const { name, lastName, age, email, phone, address } = req.body;
+    try {
+        // Check if a user with the same details already exists
+        const existingUser = await newComers.findOne({
+            name: name,
+            lastName: lastName,
+            age: age,
+            email: email,
+            phone: phone,
+            address: address
+        });
+
+        if (existingUser) {
+            return res.status(409).json({ message: 'Person with the same details already exists' });
+        }
+        // User doesn't exist, add the new comer
+        const person = new newComers({
+            name: name,
+            lastName: lastName,
+            age: age,
+            email: email,
+            phone: phone,
+            address: address
+        });
+
+        const savedPerson = await person.save();
+        res.json({ exists: false, data: savedPerson });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
+    }
 });
+
 
 app.delete('/newComers/:id', (req, res) => {
     newComers.findByIdAndDelete(req.params.id)
@@ -97,14 +114,70 @@ app.get('/newComers/:id', (req, res) => {
             console.log(err);
         })
 })
-app.put('/newComers/:id', (req, res) => {
-    newComers.findByIdAndUpdate(req.params.id, {
-        name: req.body.name,
-        lastName: req.body.lastName,
-        age: req.body.age,
-        email: req.body.email,
-        phone: req.body.phone,
-        address: req.body.address
+
+app.put('/newComers/:id', async (req, res) => {
+    const { name, lastName, age, email, phone, address } = req.body;
+    try {
+        // Check if a user with the same details already exists
+        const existingUser = await newComers.findOne({
+            name: name,
+            lastName: lastName,
+            age: age,
+            email: email,
+            phone: phone,
+            address: address
+        });
+
+        if (existingUser && existingUser._id.toString() !== req.params.id) {
+            return res.status(409).json({ message: 'Person with the same details already exists' });
+        }
+
+        const updatedUser = await newComers.findByIdAndUpdate(req.params.id, {
+            name: name,
+            lastName: lastName,
+            age: age,
+            email: email,
+            phone: phone,
+            address: address
+        });
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'An error occurred' });
+    }
+});
+
+
+// app.put('/newComers/:id', (req, res) => {
+
+//     newComers.findByIdAndUpdate(req.params.id, {
+//         name: req.body.name,
+//         lastName: req.body.lastName,
+//         age: req.body.age,
+//         email: req.body.email,
+//         phone: req.body.phone,
+//         address: req.body.address
+//     })
+//         .then((data) => {
+//             res.json(data);
+//         })
+//         .catch((err) => {
+//             console.log(err);
+//         })
+// })
+
+// search for a user with name, lastName, email, phone, address
+app.get('/newComers/search/:search', (req, res) => {
+    const search = req.params.search;
+    newComers.find({
+        $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { lastName: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+            { phone: { $regex: search, $options: 'i' } },
+            { address: { $regex: search, $options: 'i' } }
+        ]
     })
         .then((data) => {
             res.json(data);

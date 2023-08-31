@@ -4,6 +4,8 @@ import axios from "axios";
 import { styleForm } from "../style/styling";
 import { useRoute } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { Feather } from '@expo/vector-icons';
+import 'react-native-get-random-values';
 
 const UpdateComer = ({ navigation }) => {
     const httpAddress = "172.20.10.3"
@@ -44,14 +46,6 @@ const UpdateComer = ({ navigation }) => {
         getNewComer();
     }, []);  
 
-    useEffect(() => {
-        if (name === "" || lastName === "" || !age  || email === "" || phone === "" || address === "") {
-            setIsEmpty(true);
-        } else {
-            setIsEmpty(false);
-        }
-    }, [name, lastName, age, email, phone, address]);
-
     const handleUpdateComer = async (name, lastName, age, email, phone, address) => {
         if (name === "" || lastName === "" || !age  || email === "" || phone === "" || address === "") {
             setErrorMessage("Please fill in all fields");
@@ -71,7 +65,7 @@ const UpdateComer = ({ navigation }) => {
             phone: phone,
             address: address,
         };
-        // console.log(updatedComers);
+
         setName("");
         setLastName("");
         setAge("");
@@ -83,11 +77,34 @@ const UpdateComer = ({ navigation }) => {
             const response = await axios.put(`http://${httpAddress}:3001/newComers/${id}`, updatedComers);
             if (response.status === 200 && response.status < 300) {
                 navigation.navigate("Updated");
-            } else {
-                setFetchingError(true);
+            }else if (response.status === 409) {
+                setErrorMessage("Someone with the same details already exists.");
+                setName(name);
+                setLastName(lastName);
+                setAge(age);
+                setEmail(email);
+                setPhone(phone);
+                setAddress(address);
+                setTimeout(() => {
+                    setErrorMessage("");
+                }, 10000);
             }
         } catch (error) {
-            setFetchingError(true);
+            if (error.response.status === 409) {
+                setErrorMessage("Someone with the same details already exists.");
+                setName(name);
+                setLastName(lastName);
+                setAge(age);
+                setEmail(email);
+                setPhone(phone);
+                setAddress(address);
+                setTimeout(() => {
+                    setErrorMessage("");
+                }, 10000);
+            }
+            else {
+                setFetchingError(true);
+            }
         }
     };
 
@@ -142,7 +159,7 @@ const UpdateComer = ({ navigation }) => {
                             <Button title="Cancel" onPress={() => navigation.goBack()} />
                         </View>
                         <View style={deleteButton}>  
-                            <Button title="Delete" onPress={deleteComer} />
+                            <Feather name="trash-2" size={27} color="black" onPress={deleteComer} />
                         </View>
                     </View>
                     <View style={fieldContainer}>
